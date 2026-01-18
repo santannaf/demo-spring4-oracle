@@ -1,7 +1,7 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
+//    kotlin("jvm") version "2.2.21"
     kotlin("jvm") version "2.3.0"
+//    kotlin("plugin.spring") version "2.2.21"
     kotlin("plugin.spring") version "2.3.0"
     id("org.springframework.boot") version "4.0.1"
     id("io.spring.dependency-management") version "1.1.7"
@@ -33,7 +33,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("tools.jackson.module:jackson-module-kotlin")
-    runtimeOnly("com.oracle.database.jdbc:ojdbc11")
+    implementation("com.oracle.database.jdbc:ojdbc11")
+
+    implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
 
     implementation("io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter")
 
@@ -46,12 +48,29 @@ dependencies {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
-        jvmTarget.set(JvmTarget.JVM_25)
     }
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.bootJar {
+    archiveFileName.set("app.jar")
+}
+
+tasks.register<Exec>("runCustomJar") {
+    group = "application"
+    description = "Run custom jar"
+    dependsOn("bootJar")
+    val appName = "app.jar"
+    val addressesBuild = "./build/libs/$appName"
+    commandLine(
+        "java",
+        "-agentlib:native-image-agent=config-merge-dir=./src/main/resources/META-INF/native-image/",
+        "-jar",
+        addressesBuild
+    )
 }
 
 graalvmNative {
@@ -62,8 +81,9 @@ graalvmNative {
             debug.set(true)
             configurationFileDirectories.from(file("src/main/resources/META-INF/native-image"))
             buildArgs("--color=always", "-H:+AddAllCharsets",
-                "--initialize-at-run-time=oracle.jdbc.driver.OracleDriver",
-                "--initialize-at-run-time=oracle.jdbc.driver.T4CConnection")
+//                "--initialize-at-run-time=oracle.jdbc.driver.OracleDriver",
+//                "--initialize-at-run-time=oracle.jdbc.driver.T4CConnection"
+            )
         }
     }
 }
