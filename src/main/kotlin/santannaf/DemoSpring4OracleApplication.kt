@@ -3,14 +3,12 @@ package santannaf
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories
 import org.springframework.jdbc.core.simple.JdbcClient
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import javax.sql.DataSource
 
 @SpringBootApplication
-@EnableJdbcRepositories
 class DemoSpring4OracleApplication
 
 fun main(args: Array<String>) {

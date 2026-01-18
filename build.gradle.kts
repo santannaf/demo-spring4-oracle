@@ -1,7 +1,6 @@
 plugins {
-//    kotlin("jvm") version "2.2.21"
+    java
     kotlin("jvm") version "2.3.0"
-//    kotlin("plugin.spring") version "2.2.21"
     kotlin("plugin.spring") version "2.3.0"
     id("org.springframework.boot") version "4.0.1"
     id("io.spring.dependency-management") version "1.1.7"
@@ -80,9 +79,13 @@ graalvmNative {
             verbose.set(true)
             debug.set(true)
             configurationFileDirectories.from(file("src/main/resources/META-INF/native-image"))
-            buildArgs("--color=always", "-H:+AddAllCharsets",
-//                "--initialize-at-run-time=oracle.jdbc.driver.OracleDriver",
-//                "--initialize-at-run-time=oracle.jdbc.driver.T4CConnection"
+            buildArgs(
+                "--color=always",
+                "-H:+AddAllCharsets",
+                "-J-Dfile.encoding=UTF-8",
+                "-J-Duser.language=pt",
+                "-J-Duser.country=BR",
+                "-J-Duser.timezone=America/Sao_Paulo"
             )
         }
     }
